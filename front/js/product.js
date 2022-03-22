@@ -4,6 +4,10 @@ const urlParams = new URLSearchParams(queryString);
 // console.log(urlParams)
 const id = urlParams.get("id");
 // console.log({ id })
+if (id != null) {
+  let itemPrice = 0;
+  let imgUrl, altText;
+}
 
 // sa log tout se qu'il reçois de l api concernant l'article qui as etais clicker
 fetch(`http://localhost:3000/api/products/${id}`)
@@ -11,14 +15,10 @@ fetch(`http://localhost:3000/api/products/${id}`)
   .then((res) => handleData(res));
 
 function handleData(canaper) {
-  //   const altTxt = canaper.altTxt
-  //   const colors = canaper.colors
-  //   const description = canaper.description
-  //   const imageUrl = canaper.imageUrl
-  //   const name = canaper.name
-  //   const price = canaper.price
-  //   const _id = canaper._id
   const { altTxt, colors, description, imageUrl, name, price } = canaper;
+  itemPrice = price;
+  imgUrl = imageUrl;
+  altText = altTxt;
   faireImage(imageUrl, altTxt);
   faireTitle(name);
   fairePrice(price);
@@ -58,12 +58,42 @@ function faireMenuColors(colors) {
   if (select != null) {
     /*le select ses pour avoir plusieur choix */
     colors.forEach((color) => {
-      /*foreach sa permety d'executer la function donner sur le tableaux (array)*/
+      /*foreach sa permet d'executer la function donner sur le tableaux (array)*/
       const option = document.createElement("option");
-      option.value =color; /*value permet le renvois des des valeur de la fonction dans l ordre quelle sont sur le tableaux exemple 
+      option.value =
+        color; /*value permet le renvois des des valeur de la fonction dans l ordre quelle sont sur le tableaux exemple 
       rouge bleue vert sa peut pas etre vert bleue rouge*/
       option.textContent = color;
       select.appendChild(option);
     });
   }
 }
+
+//  localstorage ses une sorte de base de donner local
+
+const button = document.querySelector("#addToCart");
+if (button != null) {
+  button.addEventListener("click", (e) => {
+    const couleurs = document.querySelector("#colors").value;
+    const quantiter = document.querySelector("#quantity").value;
+    if ( couleurs == null || couleurs === "" || quantiter == null || quantiter == 0) {
+      alert("Veulliez Choisir une couleur et une quantiter");
+      return;
+    }
+
+    // cela permet de  nous envoyer sur la page ou il y as le formulaire du panier
+    window.location.href = "cart.html";
+  });
+}
+
+function saveCart() {   
+  const objet = {
+  id: id,
+  colors: couleurs,
+  quantity: Number(quantiter),
+  price: itemPrice,
+  imageUrl: imgUrl,
+  altTxt: altText
+}
+localStorage.setItem(id, JSON.stringify(objet));
+};
